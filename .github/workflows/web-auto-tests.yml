@@ -1,4 +1,4 @@
-name: Web - Automation - Tests
+name: Web - Automation - Tests (Playwright)
 
 on:
   push:

@@ -1,0 +1,37 @@
+name: Web - API - Tests (Newman)
+
+on:
+  push:
+    paths:
+      - 'web/api-testing/**'
+  pull_request:
+    paths:
+      - 'web/api-testing/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/api-testing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run API tests
+        run: npm test
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-report
+          path: web/api-testing/reports/api-report.html

@@ -1,0 +1,56 @@
+name: Web - Performance - Tests (k6)
+
+on:
+  push:
+    paths:
+      - 'web/performance/**'
+  pull_request:
+    paths:
+      - 'web/performance/**'
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Which scenario to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - load
+          - stress
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/performance
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # k6 isn't available as a simple apt package by default, so we add
+      # its official repo first. This is the standard install method for
+      # Debian/Ubuntu-based runners (which is what ubuntu-latest is).
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D1716B9BF13AF8E8A6B4
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      # push/PR always run 'smoke' (fast, safe); a manual run lets you pick
+      # smoke/load/stress via the "Run workflow" button on GitHub.
+      - name: Determine scenario
+        run: echo "SCENARIO=${{ github.event.inputs.scenario || 'smoke' }}" >> "$GITHUB_ENV"
+
+      - name: Run k6 scenario
+        run: k6 run scenarios/${{ env.SCENARIO }}.js
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-report-${{ env.SCENARIO }}
+          path: web/performance/*-report.html

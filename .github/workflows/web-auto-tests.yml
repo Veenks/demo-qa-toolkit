@@ -1,4 +1,4 @@
-name: Web - Automation - Smoke Tests
+name: Web - Automation - Tests
 
 on:
   push:

@@ -15,7 +15,6 @@ demo-qa-toolkit/
 │   ├── automation/          → E2E framework, Page Object Model, CI pipeline (Playwright)
 │   ├── api-testing/         → schema validation, negative cases, request chaining (Postman/Newman)
 │   ├── performance/         → load and stress testing, result reports (k6)
-│   ├── contract-testing/    → consumer-driven contract tests between services (Pact) — coming soon
 │   └── accessibility/       → a11y checks against WCAG (axe-core) — coming soon
 ├── mobile/                  → coming soon
 │   ├── manual/

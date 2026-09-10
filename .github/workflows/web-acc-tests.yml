@@ -1,0 +1,39 @@
+name: Web - Accessibility - Tests (Axe-Core)
+
+on:
+  push:
+    paths:
+      - 'web/accessibility/**'
+  pull_request:
+    paths:
+      - 'web/accessibility/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/accessibility
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run accessibility scans
+        run: pytest --html=report.html --self-contained-html
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: web/accessibility/report.html

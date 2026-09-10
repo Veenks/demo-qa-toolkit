@@ -1,4 +1,4 @@
-name: Web - Automation - Playwright Tests
+name: Web - Automation - Smoke Tests
 
 on:
   push:
@@ -28,8 +28,11 @@ jobs:
           pip install -r requirements.txt
           playwright install --with-deps chromium
 
-      - name: Run tests
+      - name: Run Smoke tests
         run: pytest -m smoke --html=report.html --self-contained-html
+
+      - name: Run Regression tests
+        run: pytest -m regression --html=report.html --self-contained-html
 
       - name: Upload HTML report
         if: always()
